@@ -1,10 +1,16 @@
+#!/bin/bash
 # EXAMPLE STRIPPED SETUP SCRIPT FOR LXPLUS THAT Cameron Embree USED.
 #
 ### generic setup to be run at the start of EVERY LXPLUS session
-export BASEDIR=/afs/cern.ch/user/c/cembree/public/progs
+
+#Get the first letter of the user's name
+user=$USER
+U=${user:0:1}
+
 #
-### home directory of installation like APPLGrid
-export MYHOME=/afs/cern.ch/user/c/cembree/public
+#Base directory for installation of APPLgrid, LHAPDF, Hoppet, FastJet, etc.
+export BASEDIR=/afs/cern.ch/work/$U/$USER/usr/
+
 #
 #
 #
@@ -16,35 +22,36 @@ export releases=/afs/cern.ch/sw/lcg/app/releases
 export contrib=/afs/cern.ch/sw/lcg/contrib
 #
 source ${contrib}/gcc/4.6/${platform}/setup.sh
+
 #
 #
 #
-### Add program paths to standard paths $PATH & LDPATH
+### Add program paths to standard paths PATH & LD_LIBRARY_PATH
 export ROOTSYS=/afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.05/${platform}/root
-export LHAPDFPATH=${BASEDIR}/lhapdf
+export LHAPDFPATH=${BASEDIR}/lhapdf/5.9.1
 export FASTJET=/afs/cern.ch/sw/lcg/external/fastjet/3.0.3/${platform}
-export HOPPET=${BASEDIR}/hoppet
-export APPLGRID=${BASEDIR}/applgrid
+export HOPPET=${BASEDIR}/hoppet/1.1.5
+export APPLGRID=${BASEDIR}/applgrid/1.4.56
 export SHERPA=${BASEDIR}/sherpa
+
 #
 ### explicitly update paths
 export PATH=${FASTJET}/bin:${HOPPET}/bin:${APPLGRID}/bin:${SHERPA}/bin:${ROOTSYS}/bin:${LHAPDFPATH}/bin:${PATH}
 export LD_LIBRARY_PATH=${FASTJET}/lib:${HOPPET}/lib:${APPLGRID}/lib:${SHERPA}/lib:${ROOTSYS}/lib:${LHAPDFPATH}/lib:${LD_LIBRARY_PATH}
+
 #
 #
 #
 ### Link to APPLgrids and PDFSets to local directory
-rm PDFsets
-#ln -s ${MYHOME}/workspace/MyAnalysis/PDFsets PDFsets
-ln -s /afs/cern.ch/work/c/cembree/public/PDFsets
+unlink PDFsets
+ln -s /afs/cern.ch/work/${U}/${USER}/public/PDFsets
 #
-#ln -s `lhapdf-config --pdfsets-path` PDFsets
-rm MyGrids
-ln -s ${MYHOME}/workspace/MyAnalysis/MyGrids MyGrids
+unlink MyGrids
+ln -s /afs/cern.ch/work/${U}/${USER}/public/MyGrids
 #
 #
 #
-export  ARCH="-m64"
+export ARCH="-m64"
 export CXXFLAGS=$ARCH
 export F90FLAGS=$ARCH
 export CFLAGS=$ARCH
