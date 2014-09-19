@@ -27,11 +27,24 @@ source ${contrib}/gcc/4.6/${platform}/setup.sh
 #
 #
 ### Add program paths to standard paths PATH & LD_LIBRARY_PATH
+
+### ROOT ###
+# Uncomment to use ROOT v5.34.05
 export ROOTSYS=/afs/cern.ch/sw/lcg/app/releases/ROOT/5.34.05/${platform}/root
+
+### LHAPDF ###
 export LHAPDFPATH=${BASEDIR}/lhapdf/5.9.1
+
+### FASTJET ###
 export FASTJET=/afs/cern.ch/sw/lcg/external/fastjet/3.0.3/${platform}
+
+### HOPPET ###
 export HOPPET=${BASEDIR}/hoppet/1.1.5
+
+### APPLGRID ###
 export APPLGRID=${BASEDIR}/applgrid/1.4.56
+
+### SHERPA ###
 export SHERPA=${BASEDIR}/sherpa
 
 #
