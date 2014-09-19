@@ -1,0 +1,86 @@
+
+# NOTE:
+#
+# This Makefile is suited to build MyAnalysis with the following dependencies:
+#	LHAPDF v5.9.1
+#	LHAPDF v6.1.4
+#     	Hoppet v1.1.5
+#     	APPLgrid v1.4.56
+#     	FastJet v3.0.6
+#	ROOT v6.00.02
+#
+#	Since we are using ROOT v6.00.02, all libraries have been compiled with
+#	GCC 4.8, to support C++11
+#
+#	Thus, this makefile uses the G++ 4.8.1 Compiler located on AFS at:
+#
+#	/afs/cern.ch/sw/lcg/contrib/gcc/4.8.1/x86_64-slc6-gcc48-opt/bin/g++
+#
+################################################################################
+
+CXX = /afs/cern.ch/sw/lcg/contrib/gcc/4.8.1/x86_64-slc6-gcc48-opt/bin/g++
+F77 = gfortran
+DEBUG = -g
+
+FFLAGS   += -O3 -fPIC 
+# NOTE: Perhaps try compiling with -std=c++11?
+CXXFLAGS += -O3 -fPIC -fpermissive -std=c++11 
+LDFLAGS +=  -fno-automatic -fno-f2c -O3  # -I./src/Inc -Iobj
+
+# ROOT
+ROOTINCS = $(shell root-config --cflags) 
+ROOTLIBS = $(shell root-config --glibs) 
+ROOTARCH = $(findstring -m64, $(ROOTINCS) )
+
+# LHAPDF
+LHAPDFINCS = -I$(shell lhapdf-config --prefix)/include
+LHAPDFDIR  = $(shell lhapdf-config --prefix)/lib
+LHAPDFLIBS = -L$(LHAPDFDIR) -lLHAPDF
+
+# APPLgrid
+APPLCXXFLAGS = $(shell applgrid-config --cxxflags)
+APPLCLIBS    = $(shell applgrid-config --ldcflags)
+APPLFLIBS    = $(shell applgrid-config --ldflags)
+#APPLCLIBS    = -L/afs/cern.ch/user/c/cembree/public/progs/lib -lAPPLgrid -m64
+
+# Hoppet
+HOPPETLIBS =  $(shell hoppet-config --libs)
+
+
+# Get the fortran runtime library for linking fortran 
+FRTLLIB = $(shell gfortran $(CXXFLAGS) -print-file-name=libgfortran.a)
+FRTLIB  = -L$(subst /libgfortran.a, ,$(FRTLLIB) ) -lgfortran
+
+HOPPETINCS=$(shell hoppet-config --cxxflags)
+HOPPETLIBS=$(shell hoppet-config --libs)
+
+# now set up the compile and link flags and libs
+CXXFLAGS += $(ROOTARCH) $(ROOTINCS) $(APPLCXXFLAGS) $(LHAPDFINCS) $(HOPPETINCS) 
+
+CLIBS += $(APPLCLIBS) $(HOPPETLIBS) $(ROOTLIBS) $(FRTLIB) $(LHAPDFLIBS)
+FLIBS += $(LHAPDFLIBS) $(HOPPETLIBS) $(APPLFLIBS) $(ROOTLIBS) $(FRTLIB)
+
+OFILE= MyFrame.o MyFrameData.o MyData.o MyPDF.o MyBand.o MyGrid.o MyCrossSection.o AtlasStyle.o lhapdf_string_interface.o 
+#
+
+install : all
+all : plot testmypdf
+
+plot: plot.o $(OFILE) 
+	$(CXX) $(LDFLAGS) $(DEBUG) -o $@ $(OFILE) $<  $(CLIBS)
+
+testmypdf: testmypdf.o $(OFILE)
+	$(CXX) $(LDFLAGS) -o $@  $(OFILE) $< $(CLIBS) $(LHAPDFLIBS) 
+
+
+.SUFFIXES : .cxx .o .f .c 
+
+.f.o :
+	$(F77) $(FFLAGS)   -c $<
+
+.cxx.o:	 
+	$(CXX) $(CXXFLAGS) -c $< 
+
+
+clean:
+	rm -rf ./.libs ./.obj *.lo *.o *.la  *~ plot testmypdf

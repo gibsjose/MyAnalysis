@@ -1,0 +1,29 @@
+&StatCorr
+
+
+   Name1 = 'ATLAS 7 TeV Dijet data y_25_30 R=0.4'
+   Name2 = 'ATLAS 7 TeV Dijet data y_25_30 R=0.4'
+
+   NIdColumns1 = 2
+   NIdColumns2 = 2
+
+   IdColumns1 = 'pt1', 'pt2'
+   IdColumns2 = 'pt1', 'pt2'
+
+   NBins1 = 4
+   NBins2 = 4
+
+   MatrixFormatIsTable = true
+
+   MatrixType = 'Statistical correlations'
+
+
+&End 
+
+   0   0        2120       2550       3040       3930  
+   0   0        2550       3040       3930       5040  
+ 2120  2550   1.000000  -0.005936  -0.029905   0.024910 
+ 2550  3040  -0.005936   1.000000   0.078405  -0.045728 
+ 3040  3930  -0.029905   0.078405   1.000000   0.026744 
+ 3930  5040   0.024910  -0.045728   0.026744   1.000000 
+
